@@ -2,6 +2,7 @@
 #include <vector>
 #include <pthread.h>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
@@ -87,7 +88,7 @@ double measure_execution_time(int size, int num_threads)
     }
 
     // Start timer
-    clock_t start = clock();
+    auto start_time = chrono::high_resolution_clock::now();
 
     // Wait for threads to finish
     for (int i = 0; i < num_threads; i++)
@@ -96,8 +97,8 @@ double measure_execution_time(int size, int num_threads)
     }
 
     // Stop timer and calculate execution time
-    clock_t end = clock();
-    double execution_time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+    auto end_time = chrono::high_resolution_clock::now();
+    double execution_time = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count() / 1e6;
 
     // Free memory
     for (int i = 0; i < size; i++)
@@ -118,7 +119,7 @@ double measure_execution_time(int size, int num_threads)
 int main()
 {
     int sizes[] = {100, 1000, 2000, 5000};
-    int num_threads_values[] = {2, 4, 8};
+    int num_threads_values[] = {2, 4, 8, 16, 32};
 
     for (int size : sizes)
     {
